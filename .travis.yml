@@ -1,0 +1,16 @@
+sudo: required
+dist: trusty
+language: cpp
+compiler:
+  - clang
+  - gcc
+env:
+  global:
+    - ONI_TEST_DATA_PATH=$TRAVIS_BUILD_DIR/data
+script:
+  - git lfs pull
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
+  - ./unit_tests
