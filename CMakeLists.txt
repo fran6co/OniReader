@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 project(OniReader)
 
+option(BUILD_TESTS "Builds tests" OFF)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 find_package(JPEG REQUIRED)
@@ -19,38 +21,40 @@ target_link_libraries(OniReader
 install(TARGETS OniReader DESTINATION lib RUNTIME DESTINATION bin)
 install(DIRECTORY "${OniReader_SOURCE_DIR}/include" DESTINATION include)
 
-set(GOOGLETEST_ROOT 3rdparty/googletest CACHE STRING "Google Test source root")
+if (BUILD_TESTS)
+    set(GOOGLETEST_ROOT 3rdparty/googletest CACHE STRING "Google Test source root")
 
-include_directories(
-    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}
-    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/include
-)
+    include_directories(
+        ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}
+        ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/include
+    )
 
-set(GOOGLETEST_SOURCES
-    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/src/gtest-all.cc
-    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/src/gtest_main.cc
-)
+    set(GOOGLETEST_SOURCES
+        ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/src/gtest-all.cc
+        ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/src/gtest_main.cc
+    )
 
-foreach(_source ${GOOGLETEST_SOURCES})
-    set_source_files_properties(${_source} PROPERTIES GENERATED 1)
-endforeach()
+    foreach(_source ${GOOGLETEST_SOURCES})
+        set_source_files_properties(${_source} PROPERTIES GENERATED 1)
+    endforeach()
 
-add_library(googletest ${GOOGLETEST_SOURCES})
+    add_library(googletest ${GOOGLETEST_SOURCES})
 
-add_executable(unit_tests
-    test/main.cpp
-    test/test.cpp
-)
+    add_executable(unit_tests
+        test/main.cpp
+        test/test.cpp
+    )
 
-target_link_libraries(unit_tests
-    googletest
-    pthread
-    OniReader
-)
+    target_link_libraries(unit_tests
+        googletest
+        pthread
+        OniReader
+    )
 
-add_dependencies(unit_tests googletest)
+    add_dependencies(unit_tests googletest)
 
-include(CTest)
-enable_testing()
+    include(CTest)
+    enable_testing()
 
-add_test(unit ${PROJECT_BINARY_DIR}/unit_tests "${PROJECT_SOURCE_DIR}/data")
+    add_test(unit ${PROJECT_BINARY_DIR}/unit_tests "${PROJECT_SOURCE_DIR}/data")
+endif()
