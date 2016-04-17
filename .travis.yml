@@ -7,8 +7,11 @@ compiler:
 env:
   global:
     - ONI_TEST_DATA_PATH=$TRAVIS_BUILD_DIR/data
+before_install:
+  - curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+  - sudo apt-get install -y git-lfs
 script:
-  - git lfs pull
+  - /usr/bin/git-lfs pull
   - mkdir build
   - cd build
   - cmake ..
